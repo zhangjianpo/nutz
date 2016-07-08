@@ -1001,8 +1001,8 @@ public class Strings {
      *            要拼接的数组
      * @return 拼接好的字符串
      */
-    public static <T> String join(String sp, T... args) {
-        return Lang.concat(sp, args).toString();
+    public static <T> String join(String sp, T... array) {
+        return Lang.concat(sp, array).toString();
     }
 
     /**
@@ -1051,7 +1051,7 @@ public class Strings {
      *            原字符串
      * @param newCharset
      *            指定的新编码集
-     * @return
+     * @return 新字符集编码的字符串
      */
     public static String changeCharset(CharSequence cs, Charset newCharset) {
         if (cs != null) {
@@ -1107,6 +1107,13 @@ public class Strings {
     }
 
     /**
+     * @see #split(String, boolean, boolean, char...)
+     */
+    public static String[] split(String str, boolean keepQuote, char... seps) {
+        return split(str, keepQuote, false, seps);
+    }
+
+    /**
      * 将字符串按照某个或几个分隔符拆分。 其中，遇到字符串 "..." 或者 '...' 并不拆分
      * 
      * @param str
@@ -1117,7 +1124,7 @@ public class Strings {
      *            分隔符
      * @return 拆分后的数组
      */
-    public static String[] split(String str, boolean keepQuote, char... seps) {
+    public static String[] split(String str, boolean keepQuote, boolean keepBlank, char... seps) {
         List<String> list = new LinkedList<String>();
         char[] cs = str.toCharArray();
         StringBuilder sb = new StringBuilder();
@@ -1125,7 +1132,7 @@ public class Strings {
             char c = cs[i];
             // 遇到分隔符号
             if (Nums.isin(seps, c)) {
-                if (!Strings.isBlank(sb)) {
+                if (keepBlank || !Strings.isBlank(sb)) {
                     String s2 = sb.toString();
                     if (!keepQuote)
                         s2 = evalEscape(s2);
@@ -1136,6 +1143,8 @@ public class Strings {
             // 如果是转义字符
             else if (c == '\\') {
                 i++;
+                if (keepQuote)
+                    sb.append(c);
                 if (i < cs.length) {
                     c = cs[i];
                     sb.append(c);
@@ -1179,7 +1188,7 @@ public class Strings {
         }
 
         // 添加最后一个
-        if (!Strings.isBlank(sb)) {
+        if (keepBlank || !Strings.isBlank(sb)) {
             String s2 = sb.toString();
             if (!keepQuote)
                 s2 = evalEscape(s2);

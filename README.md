@@ -98,7 +98,7 @@ DaoUp.me().close();
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.55</version>
+			<version>1.r.56.r3</version>
 		</dependency>
 ```
 
@@ -118,7 +118,7 @@ DaoUp.me().close();
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.56-SNAPSHOT</version>
+			<version>1.r.57-SNAPSHOT</version>
 		</dependency>
 		<!-- 其他依赖 -->
 	</dependencies>
@@ -126,7 +126,33 @@ DaoUp.me().close();
 
 也可以将repositories配置放入$HOME/.m2/settings.xml中
 
-或者直接去[快照库下载](https://oss.sonatype.org/content/repositories/snapshots/org/nutz/nutz/1.r.56-SNAPSHOT/)
+或者直接去[快照库下载](https://oss.sonatype.org/content/repositories/snapshots/org/nutz/nutz/1.r.57-SNAPSHOT/)
+
+## Android下使用nutz时的注意事项
+
+* Dao基于JDBC API,所以无法工作
+* AOP在Android的类加载机制下无法使用
+* Scans及Ioc中类扫描机制,是不能工作的
+
+### 混淆时需要加入的配置
+
+```
+### for nutz
+-keepattributes Signature
+-dontwarn org.nutz.**
+
+-keep class org.nutz.castor.** { *; }
+-keep interface org.nutz.castor.** { *; }
+
+# 以下的按需选用
+#-keep class org.nutz.lang.** { *; }
+#-keep class org.nutz.log.** { *; }
+#-keep class org.nutz.http.** { *; }
+#-keep class org.nutz.json.** { *; }
+#-keep class org.nutz.mapl.** { *; }
+# 或直接使用全家桶
+#-keep class org.nutz.** { *; }
+```
 
 
 ## Sponsorship

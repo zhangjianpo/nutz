@@ -25,6 +25,7 @@ import org.nutz.ioc.loader.combo.ComboIocLoader;
 import org.nutz.ioc.meta.IocObject;
 import org.nutz.lang.Strings;
 import org.nutz.lang.Times;
+import org.nutz.lang.util.LifeCycle;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.repo.LevenshteinDistance;
@@ -36,7 +37,7 @@ import org.nutz.repo.LevenshteinDistance;
  */
 public class NutIoc implements Ioc2 {
 
-    private static final Object lock_get = new Object();
+    protected final Object lock_get = new Object();
 
     private static final Log log = Logs.get();
 
@@ -148,6 +149,13 @@ public class NutIoc implements Ioc2 {
     public <T> T get(Class<T> type, String name, IocContext context) throws IocException {
         if (log.isDebugEnabled())
             log.debugf("Get '%s'<%s>", name, type == null ? "" : type);
+        try {
+            if (this.mirrors instanceof LifeCycle)
+                ((LifeCycle)this.mirrors).init();
+        }
+        catch (Exception e) {
+            throw new IocException("_mirror_factory_init", e, "Mirror Factory init fail");
+        }
 
         // 创建对象创建时
         IocMaking ing = makeIocMaking(context, name);
